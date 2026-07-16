@@ -14,6 +14,7 @@ interface SidebarProps {
   onReverseGeocodeModeChange: (active: boolean) => void;
   onSelectSearchResult: (unit: AdministrativeUnit) => void;
   onReset: () => void;
+  onOpenAddressConverter: () => void;
 }
 
 export default function Sidebar({
@@ -28,6 +29,7 @@ export default function Sidebar({
   onReverseGeocodeModeChange,
   onSelectSearchResult,
   onReset,
+  onOpenAddressConverter,
 }: SidebarProps) {
   const [provinces, setProvinces] = useState<AdministrativeUnit[]>([]);
   const [query, setQuery] = useState("");
@@ -61,6 +63,10 @@ export default function Sidebar({
 
       <button className="reset-btn" onClick={onReset}>
         Về toàn quốc
+      </button>
+
+      <button className="reset-btn accent" onClick={onOpenAddressConverter}>
+        Tra cứu địa chỉ cũ ↔ mới
       </button>
 
       <div className="field">

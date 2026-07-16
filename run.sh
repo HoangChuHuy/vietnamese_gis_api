@@ -9,9 +9,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-CONDA_ENV_PYTHON="/home/chuhuyhoang/miniconda3/envs/hoangenv/bin/python"
+CONDA_ENV_PYTHON="/u01/hoangchu/miniconda3/envs/hoangenv/bin/python"
 HOST="${HOST:-127.0.0.1}"
-PORT="${PORT:-8000}"
+PORT="${PORT:-8036}"
 WEB_PORT="${WEB_PORT:-5173}"
 
 if [ ! -f "$CONDA_ENV_PYTHON" ]; then
@@ -48,5 +48,5 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-echo "==> Khởi động frontend tại http://localhost:$WEB_PORT"
-(cd web && exec npm run dev -- --port "$WEB_PORT")
+echo "==> Khởi động frontend tại http://$HOST:$WEB_PORT (và http://localhost:$WEB_PORT)"
+(cd web && exec npm run dev -- --host "$HOST" --port "$WEB_PORT")

@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import Breadcrumb from "./components/Breadcrumb";
 import Legend from "./components/Legend";
 import UnitDetailPanel from "./components/UnitDetailPanel";
+import AddressConverter from "./components/AddressConverter";
 import { useProvinceWards } from "./hooks/useBoundaries";
 import { getBoundary } from "./api/boundaries";
 import { reverseGeocode } from "./api/geocode";
@@ -17,6 +18,7 @@ export default function App() {
   const [focusFeature, setFocusFeature] = useState<BoundaryFeature | null>(null);
   const [reverseGeocodeMode, setReverseGeocodeMode] = useState(false);
   const [notFoundMsg, setNotFoundMsg] = useState<string | null>(null);
+  const [showAddressConverter, setShowAddressConverter] = useState(false);
 
   const { features, loading } = useProvinceWards(provinceCode, era);
 
@@ -98,14 +100,23 @@ export default function App() {
     [era, focusOnFeature, handleSelectProvince]
   );
 
-  const handleViewMergedInto = useCallback(
-    async (code: string) => {
+  const handleFocusUnitByCode = useCallback(
+    async (code: string, unitEra: Era = "post_reform") => {
       setNotFoundMsg(null);
-      const feature = await getBoundary(code, "post_reform");
-      if (feature) focusOnFeature(feature);
-      else setNotFoundMsg(`Không tìm thấy ranh giới cho đơn vị ${code}`);
+      const feature = await getBoundary(code, unitEra);
+      if (feature) {
+        focusOnFeature(feature);
+        setShowAddressConverter(false);
+      } else {
+        setNotFoundMsg(`Không tìm thấy ranh giới cho đơn vị ${code}`);
+      }
     },
     [focusOnFeature]
+  );
+
+  const handleViewMergedInto = useCallback(
+    (code: string) => handleFocusUnitByCode(code, "post_reform"),
+    [handleFocusUnitByCode]
   );
 
   const handleMapClick = useCallback(
@@ -134,6 +145,7 @@ export default function App() {
         onReverseGeocodeModeChange={setReverseGeocodeMode}
         onSelectSearchResult={handleSelectSearchResult}
         onReset={handleReset}
+        onOpenAddressConverter={() => setShowAddressConverter(true)}
       />
       <main className="map-area">
         <Breadcrumb
@@ -160,6 +172,9 @@ export default function App() {
         <Legend />
       </main>
       <UnitDetailPanel feature={selectedFeature} onViewMergedInto={handleViewMergedInto} />
+      {showAddressConverter && (
+        <AddressConverter onClose={() => setShowAddressConverter(false)} onFocusUnit={handleFocusUnitByCode} />
+      )}
     </div>
   );
 }

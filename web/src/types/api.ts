@@ -100,3 +100,55 @@ export interface LegalDocument {
   raw_reference?: string;
   created_at?: string;
 }
+
+export interface AddressWardOption {
+  code: string;
+  name: string;
+  name_with_type?: string;
+}
+
+export type AddressDirection = "old_to_new" | "new_to_old";
+
+export type AddressMatchType = "exact" | "district_candidates" | "split_match" | "not_found";
+
+export interface AddressConvertByNameRequest {
+  province_name: string;
+  district_name?: string;
+  ward_name?: string;
+  direction: AddressDirection;
+}
+
+/**
+ * Đơn vị hành chính trong kết quả /address/convert-by-name — tuỳ nhánh xử lý ở
+ * backend mà trả về dạng administrative_units (code/name/name_with_type) hoặc
+ * administrative_boundaries (unit_code/unit_name/province_name/district_name),
+ * nên gộp chung field của cả 2 dạng, đều optional.
+ */
+export interface AddressUnitResult {
+  code?: string;
+  unit_code?: string;
+  name?: string;
+  unit_name?: string;
+  name_with_type?: string;
+  unit_name_with_type?: string;
+  path_with_type?: string;
+  province_name?: string;
+  district_name?: string;
+  level?: number;
+  status?: UnitStatus;
+  era?: Era;
+  merged_into_code?: string;
+  merge_info?: string;
+  legal_document?: LegalDocument;
+  contribution?: "full" | "partial";
+}
+
+export interface AddressConvertByNameResponse {
+  input: { province_name: string; district_name?: string; ward_name?: string };
+  direction: AddressDirection;
+  match_type: AddressMatchType;
+  matched_unit: AddressUnitResult | null;
+  mapped_units: AddressUnitResult[];
+  resolved: boolean;
+  note: string;
+}
